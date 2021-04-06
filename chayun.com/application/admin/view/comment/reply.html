@@ -1,0 +1,72 @@
+{include file="public/header" /}
+<style>
+    #uploadImg{ font-size:12px; overflow:hidden; position:absolute}
+    #file{ position:absolute; z-index:100; margin-left:-180px;      font-size:60px;opacity:0;filter:alpha(opacity=0); margin-top:-5px;}
+</style>
+</head>
+<body>
+<article class="page-container">
+    <form class="form form-horizontal" id="form-admin-add" enctype="multipart/form-data">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"></span>回复{$username}:</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <textarea name="introduction" cols="" id="reply" rows="" class="textarea"  placeholder="" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="$.Huitextarealength(this,200)"></textarea>
+                    <p class="textarea-numberbar"><em class="textarea-length">0</em>/50</p>
+                </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="btn btn-primary radius" id="btn" type="submit" value="发布">
+            </div>
+        </div>
+    </form>
+</article>
+
+{include file="public/footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+
+    $(function(){
+        $("#btn").on('click',function(){
+            var id = {$id};
+            var reply = $('#reply').val();
+            $.ajax({
+                url:'{:url("comment/save")}',
+                type:'post',
+                data:{
+                    id:id,
+                    reply:reply
+                },
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            });
+                    }else{
+                        layer.open({
+                            icon:2,
+                            title:"错误",
+                            content:data.msg,
+                        });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

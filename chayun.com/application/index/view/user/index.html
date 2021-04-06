@@ -1,0 +1,694 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/user.css"/>
+{include file="public/header" /}
+</div>
+<div class="layui-fluid user-bg">
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md3">
+                <div class="user-nav">
+                    <a href="index.html">首页</a> > <a href="">个人中心</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-md2">
+                <div class="user-left">
+                    <div class="nav-list">
+                        <ul>
+                            <li id="center">个人中心</li>
+                            <li id="address">地址管理</li>
+                            <li id="update">信息修改</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md9 ">
+                <div class="user-center">
+                    <div class="user-top">
+                        <div class="user-icon">
+                            <img id="upload" src="/static/uploads/{$userinfo.icon}" >
+                        </div>
+                        <div class="user-icon-right ">
+                            <div class="layui-row">
+                                <div class="layui-col-md4 top-r" >
+                                    <span>昵称: {$userinfo.username}</span>
+                                </div>
+                                <div class="layui-col-md4 top-r">
+                                    <span>邮箱: {$userinfo.email}</span>
+                                </div>
+                            </div>
+                            <div class="layui-row">
+                                <div class="layui-col-md4 top-r2">
+                                    <span>未发货   {$notsend}个</span>
+                                </div>
+                                <div class="layui-col-md4 top-r2">
+                                    <span>待收货   {$sended}个</span>
+                                </div>
+                                <div class="layui-col-md4 top-r2">
+                                    <span>待评价   {$comment}个</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-bottom">
+                        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">全部订单<span class="layui-badge layui-bg-orange">{$all}</span></li>
+                                <li>等待发货 <span class="layui-badge">{$notsend}</span></li>
+                                <li>已发货<span class="layui-badge layui-bg-blue">{$sended}</span></li>
+                                <li>待评价<span class="layui-badge layui-bg-green">{$comment}</span></li>
+                            </ul>
+                            <div class="layui-tab-content" >
+                                <div class="layui-tab-item layui-show">
+                                    <div class="order-all">
+                                        <table class="tab" >
+                                            <tr class="order-header">
+                                                <td class="goods_head">订单信息</td>
+                                                <td class="td_head">订购商品</td>
+                                                <td class="td_head td_num">数量</td>
+                                                <td class="td_head">总价</td>
+                                                <td class="td_head">订单状态</td>
+                                                <td class="td_head">订单操作</td>
+                                            </tr>
+                                            {volist name='orderList' id='vo'}
+                                            <tr class="list">
+                                                <td class="order">
+                                                    <span>订单号 {$vo.ordernumber}</span><br>
+                                                    <span></span><br>
+                                                    <span>交易时间 {$vo.create_time|date="Y-m-d H:i:s"}</span><br>
+                                                </td>
+                                                <td class="td_d shop"><img src="http://chayun.com/static/uploads/{$vo.picture}" ></td>
+                                                <td class="td_d order-num">{$vo.num}</td>
+                                                <td class="td_d order-price">￥{$vo.total}</td>
+                                                <td class="td_d order-status">
+                                                    <a class="">
+                                                        {switch $vo.status}
+                                                            {case 0}待发货{/case}
+                                                            {case 1}已发货{/case}
+                                                            {case 2}待评价{/case}
+                                                            {case 3}交易完成{/case}
+                                                        {/switch}
+                                                    </a>
+                                                </td>
+                                                <td class="td_d order-del">
+                                                    <a onclick="orderdel({$vo.id})">删除</a>
+                                                </td>
+                                            </tr>
+                                            {/volist}
+                                        </table>
+                                    </div>
+
+                                </div>
+                                <div class="layui-tab-item">
+                                    <table class="tab" >
+                                        <tr class="order-header">
+                                            <td class="goods_head">订单信息</td>
+                                            <td class="td_head">订购商品</td>
+                                            <td class="td_head td_num">数量</td>
+                                            <td class="td_head">总价</td>
+                                            <td class="td_head">订单状态</td>
+                                            <td class="td_head">订单操作</td>
+                                        </tr>
+                                        {volist name='orderList' id='vo'}
+                                        {if $vo.status == 0}
+                                        <tr class="list">
+                                            <td class="order">
+                                                <span>订单号 {$vo.ordernumber}</span><br>
+                                                <span></span><br>
+                                                <span>交易时间 {$vo.create_time|date="Y-m-d H:i:s"}</span><br>
+                                            </td>
+                                            <td class="td_d shop"><img src="http://chayun.com/static/uploads/{$vo.picture}" ></td>
+                                            <td class="td_d order-num">{$vo.num}</td>
+                                            <td class="td_d order-price">￥{$vo.total}</td>
+                                            <td class="td_d order-status">
+                                                <a class="">待发货</a>
+                                            </td>
+                                            <td class="td_d order-del"><a onclick="remind({$vo.id})">提醒发货</a></td>
+                                        </tr>
+                                        {/if}
+                                        {/volist}
+                                    </table>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <table class="tab" >
+                                        <tr class="order-header">
+
+                                            <td class="goods_head">订单信息</td>
+                                            <td class="td_head">订购商品</td>
+                                            <td class="td_head td_num">数量</td>
+                                            <td class="td_head">总价</td>
+                                            <td class="td_head">订单状态</td>
+                                            <td class="td_head">订单操作</td>
+                                        </tr>
+                                        {volist name='orderList' id='vo'}
+                                        {if $vo.status == 1}
+                                        <tr class="list">
+                                            <td class="order">
+                                                <span>订单号 {$vo.ordernumber}</span><br>
+                                                <span></span><br>
+                                                <span>交易时间 {$vo.create_time|date="Y-m-d H:i:s"}</span><br>
+                                            </td>
+                                            <td class="td_d shop"><img src="http://chayun.com/static/uploads/{$vo.picture}" ></td>
+                                            <td class="td_d order-num">{$vo.num}</td>
+                                            <td class="td_d order-price">￥{$vo.total}</td>
+                                            <td class="td_d order-status">
+                                                <a class="">已发货</a>
+                                            </td>
+                                            <td class="td_d order-del"><a onClick="status({$vo.id})">确认收货</a>
+                                            </td>
+                                        </tr>
+                                        {/if}
+                                        {/volist}
+                                    </table>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <table class="tab" >
+                                        <tr class="order-header">
+                                            <td class="goods_head">订单信息</td>
+                                            <td class="td_head">订购商品</td>
+                                            <td class="td_head td_num">数量</td>
+                                            <td class="td_head">总价</td>
+                                            <td class="td_head">订单状态</td>
+                                            <td class="td_head">订单操作</td>
+                                        </tr>
+                                        {volist name='orderList' id='vo'}
+                                        {if $vo.status == 2}
+                                        <tr class="list">
+                                            <td class="order">
+                                                <span>订单号 {$vo.ordernumber}</span><br>
+                                                <span></span><br>
+                                                <span>交易时间 {$vo.create_time|date="Y-m-d H:i:s"}</span><br>
+                                            </td>
+                                            <td class="td_d shop"><img src="http://chayun.com/static/uploads/{$vo.picture}" ></td>
+                                            <td class="td_d order-num">{$vo.num}</td>
+                                            <td class="td_d order-price">￥{$vo.total}</td>
+                                            <td class="td_d order-status">
+                                                <a class="">待评价</a>
+                                            </td>
+                                            <td class="td_d order-del"><a href="{:url('comment/index',['orderid'=>$vo.id])}">去评价</a></td>
+                                        </tr>
+                                        {/if}
+                                        {/volist}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="address">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">添加地址</li>
+                            <li>管理地址</li>
+                        </ul>
+                        <div class="layui-tab-content" >
+                            <div class="layui-tab-item layui-show">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">姓名:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="name" id="getname"  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">电话:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="phone" id="getphone"  lay-verify="required" placeholder="请输入电话" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">地址:</label>
+                                    <div data-toggle="distpicker" >
+                                        <select style="height: 38px;border: 1px solid #E6E6E6;" id="eprovinceName" data-province="广东省" name="provinceName"></select>
+                                        <select style="height: 38px;border: 1px solid #E6E6E6;" id="ecityName" data-city="广州市" name="cityName"></select>
+                                        <select style="height: 38px;border: 1px solid #E6E6E6;" id="edistrictName" data-district="从化区" name="districtName"></select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">详细:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" style="width: 358px" name="detailinfo" id="detailinfo"  lay-verify="required" placeholder="请输入详细地址" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div style="margin-left: 80px">
+                                        <button id="submit" style="background-color: #5FB878;" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-tab-item">
+                                <div>地址的列表:</div><br>
+                                {volist name="addressList" id="vo"}
+                                <div class="tag{$vo.id}">
+                                    <div class="layui-row ">
+                                        <div class="layui-col-md9 ">
+                                            <div style="margin-bottom: 6px"><i class="layui-icon">&#xe715;</i>  {$vo.province}{$vo.city}{$vo.district}{$vo.detailinfo}<br>
+                                                <span style="margin-left: 21px">{$vo.name}   {$vo.phone}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 ">
+                                            <div class="tubiao">
+                                                <span><a class="modaddress" modurl="{:url('address/update',['id'=>$vo.id])}"><i class="layui-icon" style="font-size: 20px">&#xe631;</i></a></span>
+                                                <span><a  onclick="deladdress({$vo.id})"><i class="layui-icon" style="font-size: 20px">&#xe640;</i></a></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row">
+                                        <div class="layui-col-md12">
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/volist}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="password">
+                    <div style="padding-top: 1px;">
+                    </div>
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">信息修改</li>
+                            <li>密码修改</li>
+                        </ul>
+                        <div class="layui-tab-content" >
+                            <div class="layui-tab-item layui-show">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="width: 100px">用户名:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="username" value="{$userinfo.username}" name="username" required lay-verify="required" placeholder="请输入新用户名" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="width: 100px">邮箱:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="email" id="email" name="email" value="{$userinfo.email}" required lay-verify="required" placeholder="请输入新的邮箱" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div style="margin-left: 100px">
+                                        <button id="resetinfo" style="background-color: #5FB878;" class="layui-btn" lay-submit lay-filter="formDemo">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-tab-item">
+                                <form class="layui-form" action="">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label" style="width: 100px">原密码:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="password" id="oldpassword" name="oldpassword" required lay-verify="required" placeholder="请输入旧密码" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label" style="width: 100px">新密码:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="password" id="password" name="password" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label" style="width: 100px">确认密码:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="password" id="password_confirm" name="password_confirm" required lay-verify="required" placeholder="请输入确认密码" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div style="margin-left: 100px">
+                                            <button id="reset" style="background-color: #5FB878;" class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div style="margin-bottom: 300px"></div>
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.data.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.js"></script>
+<script>
+    var uid = {$Think.session.user_info.id};
+    var id = '.center';
+    layui.use('element', function(){
+        var $ = layui.jquery
+            ,element = layui.element;
+    });
+
+    (function(){
+        if(sessionStorage.getItem('profile') == ".user-center"){
+            $(".address,.password").css('display','none');
+            $(sessionStorage.getItem('prodile')).css('display','block');
+        }
+        if(sessionStorage.getItem('profile') == ".address"){
+            $(".user-center,.password").css('display','none');
+            $(sessionStorage.getItem('profile')).css('display','block');
+        }
+        if(sessionStorage.getItem('profile') == ".password"){
+            $(".address,.user-center").css('display','none');
+            $(sessionStorage.getItem('profile')).css('display','block');
+        }
+    })();
+    //图片上传
+    layui.use('upload', function() {
+        var $ = layui.jquery,
+            upload = layui.upload;
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#upload',
+            url: "{:url('user/updateIcon')}",
+            data:{id:uid},
+            method: 'post',
+            before: function(obj) {
+                return layer.msg('头像上传中');
+            },
+            done: function(res) {
+                //获取img id 显示图片
+                $('#upload').attr('src', "/static/uploads/"+res.message);
+                picture = res.message;
+                return layer.msg('头像更新成功');
+            }
+        });
+    });
+    /* 控制导航的对应的显示 */
+    $('#center').click(function(){
+        $(".address,.password").css('display','none');
+        $(".user-center").css('display','block');
+        id = '.user-center';
+        sessionStorage.setItem("profile", id);
+    });
+
+    $('#address').click(function(){
+
+        $(".user-center,.password").css('display','none');
+        $(".address").css('display','block');
+        id = '.address';
+        sessionStorage.setItem("profile", id);
+    });
+    $('#update').click(function(){
+        $(".address,.user-center").css('display','none');
+        $('.password').css('display','block');
+        id = '.password';
+        sessionStorage.setItem("profile", id);
+    })
+    //添加地址
+    $("#submit").click(function(){
+        var name = $("#getname").val();
+        var phone = $("#getphone").val();
+        var province = $("#eprovinceName").find("option:selected").text();
+        var city = $("#ecityName").find("option:selected").text();
+        var district = $("#edistrictName").find("option:selected").text();
+        var detailinfo = $("#detailinfo").val();
+        $.ajax({
+            url:"{:url('address/add')}",
+            type:"post",
+            data:{
+                "uid":uid,
+                "name":name,
+                "phone":phone,
+                "province":province,
+                "city":city,
+                "district":district,
+                "detailinfo":detailinfo,
+
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    layer.msg(data.msg,
+                        {
+                            icon:1,
+                            time:1000
+                        },function () {
+                            location.href=data.url;
+                        });
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:0,
+                            time:2000
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+        return false;
+    });
+
+    //重置密码
+    $("#reset").click(function(){
+        var oldpassword = $("#oldpassword").val();
+        var password = $("#password").val();
+        var password_confirm = $("#password_confirm").val();
+        $.ajax({
+            url:"{:url('user/reset')}",
+            type:"post",
+            data:{
+                "uid":uid,
+                "oldpassword":oldpassword,
+                "password":password,
+                "password_confirm":password_confirm
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    layer.msg(data.msg,
+                        {
+                            icon:1,
+                            time:1000
+                        });
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:0,
+                            time:2000
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+        return false;
+    });
+    //修改用户名邮箱
+    $("#resetinfo").click(function(){
+        var username = $("#username").val();
+        var email = $("#email").val();
+        $.ajax({
+            url:"{:url('user/resetinfo')}",
+            type:"post",
+            data:{
+                "id":uid,
+                "email":email,
+                "username": username
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    layer.msg(data.msg,
+                        {
+                            icon:1,
+                            time:1000
+                        },function () {
+                            location.href=data.url;
+                        });
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:2,
+                            time:2000
+                        },function () {
+                            location.href=data.url;
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+        return false;
+    });
+    /*确认收货*/
+    function status(id){
+            $.ajax({
+                type:'POST',
+                url:"{:url('orders/confirm')}",
+                data:{
+                    id:id,
+                },
+                datatype:'json',
+                success:function (data) {
+                    if(data.code == 1){
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },  function() {
+                                location.href=data.url;
+                            });
+                    }else {
+                        layer.open({
+                            title:"错误",
+                            content:data.msg,
+                            icon:2
+                        });
+                    }
+
+                },
+                error:function (data) {
+                    layer.open({
+                        title:"错误",
+                        content:data.msg,
+                        icon:2
+                    });
+                }
+            });
+    }
+    //提醒发货
+    function remind(orderid){
+            $.ajax({
+                url:"{:url('user/remind')}",
+                type:"post",
+                data:{
+                    "orderid":orderid
+                },
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+    }
+    //删除订单
+    function orderdel(id){
+        $.ajax({
+            url:"{:url('orders/softdel')}",
+            type:"post",
+            data:{
+                "id":id,
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    layer.msg(data.msg,
+                        {
+                            icon:1,
+                            time:1000
+                        },function () {
+                            location.href=data.url;
+                        });
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:0,
+                            time:2000
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+    }
+    //修改地址
+    $('.modaddress').on('click', function(){
+        var modurl = $(this).attr("modurl");    // 获取 要打开的链接地址
+        layer.open({
+            type: 2,
+            title: "地址修改",
+            maxmin: true,
+            shadeClose: false, //开启点击遮罩关闭层
+            area : ['550px', '400px'],
+            offset : 'auto',
+            content: modurl   // 弹出层 iframe 要打开的链接地址
+        });
+    });
+    //删除地址
+    function deladdress(id) {
+        $.ajax({
+            url:"{:url('address/del')}",
+            type:"post",
+            data:{
+                "id":id
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    layer.msg(data.msg,
+                        {
+                            icon:1,
+                            time:1000
+                        });
+                    $(".tag"+id).remove();
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:2,
+                            time:1000
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+
+    }
+</script>
+
+</body>
+</html>

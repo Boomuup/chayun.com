@@ -1,0 +1,161 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/comment.css" />
+{include file="public/header" /}
+</div>
+
+<!-- ======================================作为header头部分离========================================= -->
+
+<div class="layui-fluid footer comment-main">
+    <div class="layui-container" >
+        <div class="layui-row comment-detail">
+            <div class="layui-col-md6 ">
+                <div class="picture">
+                    <img src="/static/uploads/{$info.picture}" style="width: 150px;height: 100px;" >
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="goodsinfo">
+                    <div >{$info.goods_name}</div>
+                    <div >重量: {$info.weight}{$info.unit}</div>
+                    <div >订单号: {$info.ordernumber}</div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md12">
+                    <form class="layui-form" id="form-admin-add" enctype="multipart/form-data">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="margin-top: 5px;margin-left: 20px">评分 :</label>
+                            <div id="test1"></div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label" style="width: 100px">商品描述 :</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="从多个角度评价茶品,可以帮到更多想买的人哦" style="width: 90%;height: 250px;margin-left: -9px" id="desc" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="margin-top: 5px;width: 100px">图片描述:</label>
+                            <div class="layui-upload">
+                                <img id="upload" src="/static/index/images/uploadImg.png" style="width: 120px;height: 120px;">
+                               <!-- <button type="button" class="layui-btn" id="upload" style="width: 100px;background-color: #5FB878">上传图片</button>
+                                <br>
+                                <img class="layui-upload-img" style="width: 100px;height: 100px;margin-top: 8px" id="demo1">-->
+                                <p id="demoText" ></p>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+            <div><button type="button" id="btn" class="layui-btn layui-btn-radius" style="background-color: #5FB878;width: 100px;margin-left: 46%;margin-top: 20px">发布</button></div>
+        </div>
+    </div>
+</div>
+</div>
+
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript">
+    var score = 5;
+    var picture = "";
+    layui.use('upload', function() {
+        var $ = layui.jquery,
+            upload = layui.upload;
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#upload',
+            url: "{:url('comment/uploadImg')}",
+            method: 'post',
+            before: function(obj) {
+                //预读本地文件示例，不支持ie8
+                //上传完成前先读取显示图片
+                // obj.preview(function(index, file, result) {
+                // 	$('#demo1').attr('src', result); //图片链接（base64）
+                // });
+                return layer.msg('上传中');
+            },
+            done: function(res) {
+                //获取img id 显示图片
+                $('#upload').css({"width":"150px","height":"100px"});
+                $('#upload').attr('src', "/static/uploads/"+res.message);
+                picture = res.message;
+                return layer.msg('上传成功');
+            },
+            error: function() {
+                console.log(res);
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html(
+                    '<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function() {
+                    uploadInst.upload();
+                });
+            }
+        });
+    });
+    layui.use('rate', function(){
+        var rate = layui.rate;
+
+        //渲染
+        var ins1 = rate.render({
+            elem: '#test1'
+            ,value: 5
+            ,text: true
+            ,setText: function(value){ //自定义文本的回调
+                var arrs = {
+                    '1': '极差'
+                    ,'2': '差'
+                    ,'3': '中等'
+                    ,'4': '好'
+                    ,'5': '极好'
+                };
+                this.span.text(arrs[value] || ( value + "星"));
+            }
+            ,choose: function(value){
+                score = value;
+            }
+        });
+    });
+
+    $(function(){
+        $("#btn").on('click',function(){
+            var desc = $("#desc").val();
+            $.ajax({
+                url:"{:url('comment/add')}",
+                type:'post',
+                data:{
+                    orderid:{$orderid},
+                    score:score,
+                    picture:picture,
+                    desc:desc,
+                    shopid: {$info.shopid},
+                    uid: {$info.uid}
+                },
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            })
+                    }else{
+                        layer.open({
+                            icon:2,
+                            title:"错误",
+                            content:data.msg,
+                        });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</body>
+</html>

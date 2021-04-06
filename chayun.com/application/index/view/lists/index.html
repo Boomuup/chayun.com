@@ -1,0 +1,66 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/cate-list.css"/>
+{include file="public/header" /}
+</div>
+<div class="layui-fluid cate">
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md6 ">
+                <div class="list-condition">
+                    <div class="layui-btn-group">
+                        <button type="button" class="layui-btn layui-btn-primary">
+                            <a href="{:url('lists/index',['cid'=>$cid])}">默认</a></button>
+                        <button type="button" class="layui-btn layui-btn-primary">
+                            <a href="{:url('lists/hot',['cid'=>$cid,'hotorder'=>$hotorder,'like'=>$like])}">
+                                {if $hotorder=="desc"}销量&darr;{else}销量&uarr;{/if}
+                            </a>
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-primary">
+                            <a href="{:url('lists/price',['cid'=>$cid,'priceorder'=>$priceorder,'like'=>$like])}">
+                                {if $priceorder=="desc"}价格&darr;{else}价格&uarr;{/if}
+                            </a>
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-primary">
+                            <a href="{:url('lists/time',['cid'=>$cid,'timeorder'=>$timeorder,'like'=>$like])}">
+                                {if $timeorder=="desc"}时间&darr;{else}时间&uarr;{/if}
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md12 cate-list">
+                {volist name="cateList" id="vo"}
+                <div class="product">
+                    <div class="product-img">
+                        <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="/static/uploads/{$vo.picture}"></a>
+                    </div>
+                    <hr >
+                    <div class="product-content">
+                        <span><a href="{:url('detail/index',['id'=>$vo.id])}">{$vo.goods_name}</a></span>
+                    </div>
+                    <div class="product-price">
+                        <div class="price-left">￥{$vo.price}</div>
+                        <div class="price-right">{$vo.sales}人付款</div>
+                    </div>
+                </div>
+                {/volist}
+            </div>
+        </div>
+        <div class="layui-row">
+            <div align="center">{$cateList|raw}</div>
+        </div>
+    </div>
+</div>
+
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/index/js/bootstrap.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript">
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+</head>
+<body>
+<!-- 顶部 -->
+<div class="layui-fluid top">
+    <div class="layui-container">
+        <div class="top-left">
+            <span>欢迎光临茶韵商城:)</span>
+        </div>
+        <div class="top-right">
+            {if $Think.session.user_name}欢迎，{$Think.session.user_name}<a href="{:url('user/loginOut')}">退出</a>{else}<a href="{:url('user/login')}">登录</a>{/if}
+            <a href="{:url('user/register')}">注册</a>
+            <a href="{:url('user/index',['id'=>$Think.session.user_info.id])}">个人中心</a>
+            <a href="{:url('user/index',['id'=>$Think.session.user_info.id])}">我的订单</a>
+        </div>
+    </div>
+</div>
+<!-- 头部 -->
+<div class="layui-container">
+    <div class="header">
+        <div class="layui-row">
+            <div class="layui-col-md3 header">
+                <div class="header-logo"><a href="{:url('index/index')}"><img src="/static/index/images/logo.png" ></a></div>
+            </div>
+            <div class="layui-col-md6 ">
+                <div class="header-search">
+                    <input type="text" placeholder="搜索商品" name="" id="like" value="" />
+                    <button type="button" id="likebtn" title="点击搜索"><i class="layui-icon layui-icon-search"></i></button>
+                </div>
+            </div>
+            <div class="layui-col-md3 header">
+                <div class="header-car">
+                    <button><i class="iconfont icon-che"></i><a href="{:url('cart/index',['id'=>$Think.session.user_info.id])}">我的购物车</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 导航 -->
+    <div class="layui-row">
+        <div class="layui-col-md2  ">
+            <div class="nav">
+                <div  class="">
+                    <div class="toptitle">
+                        全部商品分类
+                    </div>
+                    <div class="topmenu">
+                        {volist name="lists" id ="vo"}
+                        <li>
+                            <a href="{:url('lists/index',['cid'=>$vo.cid])}">{$vo.cname}</a><span></span>
+                            <div class="submenu">
+                                <div class="children">
+                                     {volist name="vo['children']" id="item"}
+                                        <a href="{:url('lists/index',['cid'=>$item.cid])}">{$item.cname}</a>
+                                     {/volist}
+                                </div>
+                            </div>
+                        </li>
+                        {/volist}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="rightnav">
+                <ul>
+                    <li>
+                        <a href="{:url('lists/likelist',['like'=>'%铁观音%'])}">铁观音</a>
+                    </li>
+                    <li>
+                        <a href="{:url('lists/likelist',['like'=>'%大红袍%'])}">大红袍</a>
+                    </li>
+                    <li>
+                        <a href="">关于我们</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>

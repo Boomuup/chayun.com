@@ -1,0 +1,135 @@
+{include file="public/css" /}
+{include file="public/header" /}
+<!-- 轮播图 -->
+<div class="layui-row">
+    <div class="layui-carousel lunbo" id="lunbo">
+        <div carousel-item>
+            {volist name="banner" id="vo"}
+            <div><a href="{$vo.url}"><img src="/static/uploads/{$vo.picture}" ></a></div>
+            {/volist}
+        </div>
+    </div>
+</div>
+</div>
+<div class="layui-fluid hot">
+    <div class="layui-container">
+        <div class="hot-content">
+            <div class="hot-title">
+                <span>热销推荐</span>
+            </div>
+            {volist name="hot" id="vo"}
+            <div class="hot-project">
+                <div class="hot-img">
+                    <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="http://chayun.com/static/uploads/{$vo.picture}" alt=""></a>
+                </div>
+                <hr >
+                <div class="hot-desc">
+                    <span>{$vo.goods_name}</span>
+                </div>
+                <div class="hot-price">￥{$vo.price}</div>
+            </div>
+            {/volist}
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 乌龙茶 -->
+<div class="layui-container">
+    <div class="hot-content">
+        <div class="hot-title">
+            <span>乌龙茶</span>
+        </div>
+        {volist name="wulong" id="vo"}
+        <div class="hot-projects">
+            <div class="hot-img">
+                <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="/static/uploads/{$vo.picture}" alt=""></a>
+            </div>
+            <hr >
+            <div class="hot-desc">
+                <span>{$vo.goods_name}</span>
+            </div>
+            <div class="hot-price">￥{$vo.price}</div>
+        </div>
+        {/volist}
+    </div>
+</div>
+<!-- 绿茶 -->
+<div class="layui-container">
+    <div class="hot-content">
+        <div class="hot-title">
+            <span>绿茶</span>
+        </div>
+        {volist name="green" id="vo"}
+        <div class="hot-projects">
+            <div class="hot-img">
+                <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="/static/uploads/{$vo.picture}" alt=""></a>
+            </div>
+            <hr >
+            <div class="hot-desc">
+                <span>{$vo.goods_name}</span>
+            </div>
+            <div class="hot-price">￥{$vo.price}</div>
+        </div>
+        {/volist}
+    </div>
+</div>
+<!-- 红茶 -->
+<div class="layui-container">
+    <div class="hot-content">
+        <div class="hot-title">
+            <span>红茶</span>
+        </div>
+        {volist name="red" id="vo"}
+        <div class="hot-projects">
+            <div class="hot-img">
+                <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="/static/uploads/{$vo.picture}" alt=""></a>
+            </div>
+            <hr >
+            <div class="hot-desc">
+                <span>{$vo.goods_name}</span>
+            </div>
+            <div class="hot-price">￥{$vo.price}</div>
+        </div>
+        {/volist}
+    </div>
+</div>
+<div class="layui-fluid recommend">
+    <div class="layui-container">
+        <div class="recommend-list">
+            <div class="recommend-title">
+                更多推荐
+            </div>
+            {volist name="more" id ="vo"}
+            <div class="recommend-product">
+                <div class="recommend-img">
+                    <a href="{:url('detail/index',['id'=>$vo.id])}"><img src="/static/uploads/{$vo.picture}" ></a>
+                </div>
+                <div class="recommend-desc">
+                    <a href="{:url('detail/index',['id'=>$vo.id])}">{$vo.goods_name}</a>
+                </div>
+                <div class="recommend-price">
+                    ￥{$vo.price}
+                </div>
+            </div>
+            {/volist}
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}
+{include file="public/js" /}
+<script>
+    layui.use('carousel', function(){
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#lunbo'
+            ,width: '100%' //设置容器宽度
+            ,height: '400px'
+            ,arrow: 'always' //始终显示箭头
+            //,anim: 'updown' //切换动画方式
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+{include file="public/header" /}
+<style>
+    #uploadImg{ font-size:12px; overflow:hidden; position:absolute}
+    #file{ position:absolute; z-index:100; margin-left:-180px;      font-size:60px;opacity:0;filter:alpha(opacity=0); margin-top:-5px;}
+</style>
+</head>
+<body>
+<article class="page-container">
+    <form class="form form-horizontal" id="form-admin-add" enctype="multipart/form-data">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>url：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="" placeholder="" id="url" name="url">
+            </div>
+        </div>
+        <input type="hidden" id="picture" name="picture" />
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>轮播图：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <span id="uploadImg">
+                    <input type="file" id="file" size="1" >
+                    <button class="btn btn-secondary radius">上传图片</button>
+                </span>
+                <div id="div"></div>
+                <!--<input type="file" id="file" name="file"/>
+                <div id="div"></div>-->
+                <!--<img src="" id="img" style="width: 200px;height: 200px"/>
+                <div><input class="btn btn-primary radius" id="sub" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;"></div>-->
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">状态</label>
+            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
+			<select class="select" name="status" size="1">
+				<option value="1">使用</option>
+				<option value="0">禁用</option>
+			</select>
+			</span> </div>
+        </div>
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="btn btn-primary radius"  type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+{include file="public/footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+    //显示上传的图片
+    document.querySelector('#file').onchange = function (){
+        if(this.files.length){
+            let file = this.files[0];
+            let reader = new FileReader();
+            //新建 FileReader 对象
+            reader.onload = function(){
+                // 当 FileReader 读取文件时候，读取的结果会放在 FileReader.result 属性中
+                document.querySelector('#img').src = this.result;
+
+            };
+            // 设置以什么方式读取文件，这里以base64方式
+            reader.readAsDataURL(file);
+        }
+    }
+    //上传图片
+    $("#file").on("change",function(){
+        var formData = new FormData($( "#form-admin-add" )[0]);
+        formData.append("file", $(this).get(0).files[0]);
+        $.ajax({
+            url: '{:url("goods/uploadImg")}' ,
+            type: 'POST',
+            data: formData,
+            cache: false, //
+            contentType: false, // 不要设置Content-Type请求头
+            processData: false, // 不要处理发送的数据
+            success: function (data) {
+                console.log("路径：",data)
+                $("#div").html("").html('<img src="http://chayun.com/static/uploads/'+data.message+'" width="200" height="200" style="margin-top: 50px"/>');
+                $("#picture").val(data.message);
+                //alert($('#picture').val());
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    })
+
+
+
+    $(function(){
+
+        $("#sub").on('click',function(){
+            var formData = new FormData($( "#form-admin-add" )[0]);
+            formData.append("file", $(this).get(0).files[0]);
+            $.ajax({
+                url:'{:url("goods/uploadImg")}',
+                type:'post',
+                data:formData,
+                contentType:false,
+                processData: false,
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        var imgurl = data.message;
+                        $("#picture").val(imgurl);
+                        alert(imgurl);
+                    }else{
+                        layer.open({
+                            icon:2,
+                            title:"错误",
+                            content:data.msg,
+                        });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+
+    $(function(){
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $("#form-admin-add").validate({
+            rules:{
+
+            },
+            onkeyup:false,
+            focusCleanup:true,
+            success:"valid",
+            submitHandler:function(form){
+                    $.ajax({
+                        url:'{:url("banner/add")}',
+                        type:'post',
+                        data:$('form').serialize(),
+                        dataType:'json',
+                        success:function (data) {
+                            if(data.code==1)
+                            {
+                                layer.msg(data.msg,
+                                    {
+                                        icon:1,
+                                        time:1000
+                                    },function () {
+                                        location.href=data.url;
+                                    })
+                            }else{
+                                layer.open({
+                                    title:"错误",
+                                    content:data.msg,
+                                    icon:2,
+                                    anim:6
+                                })
+                            }
+                        }
+                    });
+                    return false;
+            }
+        });
+    });
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,281 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/order.css"/>
+{include file="public/header" /}
+</div>
+<div class="layui-container">
+    <div class="choose-address">
+        1.请填写收货地址
+        <div class="select-address" id="selsect-address">
+            <label class="layui-form-label" style="width: 100px">收货地址:</label>
+            <div class="layui-input-block" style="margin-top: 60px">
+                <select id="choose" style="height: 38px;width: 600px;border: 1px solid #E6E6E6;" name="address" lay-verify="required">
+                    {volist name="addressList" id="vo"}
+                    <option value="{$vo.id}">{$vo.province}{$vo.city}{$vo.district}{$vo.detailinfo}  {$vo.phone}  {$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+            <div class="layui-form-item" style="margin-top: 10px;">
+                <div class="layui-input-block">
+                    <button id="add_address" class="layui-btn" lay-submit lay-filter="formDemo">添加新地址</button>
+                </div>
+            </div>
+        </div>
+        <div class="add-address">
+            <div class="layui-form-item">
+                <label class="layui-form-label" >姓名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" id="getname" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"  >电话:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="phone" id="getphone" required lay-verify="required" placeholder="请输入电话" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" >地址:</label>
+                <div data-toggle="distpicker" class="layui-input-block" style="margin-left: -20px">
+                    <select style="height: 38px;border: 1px solid #E6E6E6;" id="eprovinceName" data-province="广东省" name="provinceName"></select>
+                    <select style="height: 38px;border: 1px solid #E6E6E6;" id="ecityName" data-city="广州市" name="cityName"></select>
+                    <select style="height: 38px;border: 1px solid #E6E6E6;" id="edistrictName" data-district="从化区" name="districtName"></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细:</label>
+                <div class="layui-input-inline">
+                    <input type="text" style="width: 358px" name="detailinfo" id="detailinfo" required lay-verify="required" placeholder="xxx街道xxx号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" >
+                    <button id="address" class="layui-btn" style="margin-left: -30px" lay-submit lay-filter="formDemo">保存并使用</button>
+                    <button id="back" class="layui-btn" >选择已有地址</button>
+                </div>
+            </div>
+        </div>
+        <div class="showaddress"><span id="showaddress"></span></div>
+    </div>
+
+    <div class="order-list">
+        2.确认订单信息
+        <table class="tab" >
+            <tr class="order-header">
+                <td class="">商品信息</td>
+                <td class="">重量</td>
+                <td class="">单价</td>
+                <td class="">数量</td>
+                <td class="">小计</td>
+            </tr>
+            {volist name="orderList" id="vo"}
+            <tr class="list">
+                <td class="shop-info">
+                    <img src="/static/uploads/{$vo.picture}" >
+                    <div><a href="">{$vo.goods_name}</a></div>
+                </td>
+                <td class="weight">{$vo.weight}g</td>
+                <td class="shop-price">￥{$vo.price}</td>
+                <td class="shop-num">{$vo.num}</td>
+                <td class="shop-small">{$vo.num*$vo.price}</td>
+            </tr>
+            {/volist}
+
+        </table>
+        <div class="all-price">
+
+            <div class="order-btn">
+                <button id="submit" type="button">提交订单</button>
+            </div>
+            <div class="price">
+                总计金额 ￥{$all}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.data.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.js"></script>
+<script>
+    var uid = {$Think.session.user_info.id};
+    var orderids = "{$orderids}";
+    var addressid = 0;
+    var aid = 0;
+    var num = {$num};
+    /* 显示添加地址 */
+    $('#add_address').click(function(){
+        $(".select-address").remove();
+        $(".add-address").css('display','block');
+        //增加高度
+        $(".choose-address").css('height','350px');
+    });
+    //选择已有地址
+    $('#back').click(function(){
+        location.reload();
+    });
+    $("#address").click(function(){
+        var name = $("#getname").val();
+        var phone = $("#getphone").val();
+        var province = $("#eprovinceName").find("option:selected").text();
+        var city = $("#ecityName").find("option:selected").text();
+        var district = $("#edistrictName").find("option:selected").text();
+        var detailinfo = $("#detailinfo").val();
+        $.ajax({
+            url:"{:url('address/add')}",
+            type:"post",
+            data:{
+                "uid":uid,
+                "name":name,
+                "phone":phone,
+                "province":province,
+                "city":city,
+                "district":district,
+                "detailinfo":detailinfo,
+            },
+            dataType:"json",
+            success:function (data) {
+                if(data.code==1)
+                {
+                    $(".add-address").remove();
+                    $(".showaddress").css('display','block');
+                    $(".choose-address").css('height','250px');
+                    $("#showaddress").html("<div style='margin-top: 30px'>"+
+                        "<i class=\"layui-icon\">&#xe715;</i>"+province+city+district+detailinfo+" "+phone+" "+name+
+                        "<a href=\"javascript:location.reload();\" style='margin-left: 25px'><i class=\"layui-icon\" style='font-size: 19px;color: #0d99a5'>&#x1007;</i></a>"+
+                        "</div>");
+                    addressid=data.data;
+                }else{
+                    layer.msg(data.msg,
+                        {
+                            icon:2,
+                            time:2000
+                        });
+                }
+            },error:function (data) {
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:"系统繁忙，请稍后~~",
+                });
+            }
+        });
+        return false;
+    });
+
+    $("#submit").click(function(){
+        if(addressid == 0){
+            aid = $("#choose option:selected").val();
+        }else{
+            aid = addressid;
+        }
+
+        if(num == -1){
+            $.ajax({
+                url:"{:url('orders/orderByCar')}",
+                type:"post",
+                data:{
+                    "uid":uid,
+                    'orderid':orderids,
+                    'addressid':aid
+                },
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.open({
+                            type: 1
+                            ,title: false //不显示标题栏
+                            ,closeBtn: false
+                            ,area: '200px;'
+                            ,shade: 0.8
+                            ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                            ,btn: ['完成支付', '取消']
+                            ,btnAlign: 'c'
+                            ,moveType: 1 //拖拽模式，0或者1
+                            ,content: '<img style="width: 200px;height: 200px" src="/static/index/images/pay.png" >'
+                            ,success: function(layero){
+                                var btn = layero.find('.layui-layer-btn');
+                                btn.find('.layui-layer-btn0').attr({
+                                    href: data.url
+                                });
+                            }
+                        });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+        }else{
+            $.ajax({
+                url:"{:url('orders/orderByShopId')}",
+                type:"post",
+                data:{
+                    "uid":uid,
+                    'orderid':orderids,
+                    'addressid':aid,
+                    'num':num
+                },
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.open({
+                            type: 1
+                            ,title: false //不显示标题栏
+                            ,closeBtn: false
+                            ,area: '200px;'
+                            ,shade: 0.8
+                            ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                            ,btn: ['完成支付', '取消']
+                            ,btnAlign: 'c'
+                            ,moveType: 1 //拖拽模式，0或者1
+                            ,content: '<img style="width: 200px;height: 200px" src="/static/index/images/pay.png" >'
+                            ,success: function(layero){
+                                var btn = layero.find('.layui-layer-btn');
+                                btn.find('.layui-layer-btn0').attr({
+                                    href: data.url
+                                });
+                            }
+                        });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+        }
+
+    });
+
+
+
+
+</script>
+
+</body>
+</html>

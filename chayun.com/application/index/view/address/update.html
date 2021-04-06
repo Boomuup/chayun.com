@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/index/layui/css/layui.css">
+    <script src="/static/index/js/jquery-3.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<form id="form">
+<div style="margin-top: 30px"></div>
+    <input type="hidden" name="id" id="id" value="{$data.id}">
+    <div class="layui-form-item">
+    <label class="layui-form-label">姓名:</label>
+    <div class="layui-input-inline">
+        <input type="text" name="name" id="getname" value="{$data.name}" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">电话:</label>
+    <div class="layui-input-inline">
+        <input type="text" name="phone" id="getphone" value="{$data.phone}" required lay-verify="required" placeholder="请输入电话" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">地址:</label>
+    <div data-toggle="distpicker" >
+        <select style="height: 38px;border: 1px solid #E6E6E6;" id="eprovinceName" data-province="{$data.province}" name="province"></select>
+        <select style="height: 38px;border: 1px solid #E6E6E6;" id="ecityName" data-city="{$data.city}" name="city"></select>
+        <select style="height: 38px;border: 1px solid #E6E6E6;" id="edistrictName" data-district="{$data.district}" name="district"></select>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">详细:</label>
+    <div class="layui-input-inline">
+        <input type="text" style="width: 348px" name="detailinfo" id="detailinfo" value="{$data.detailinfo}" required lay-verify="required" placeholder="请输入详细地址" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <div style="margin-left: 110px">
+        <button id="submit" style="background-color: #5FB878;" class="layui-btn" lay-submit lay-filter="formDemo">保存修改</button>
+    </div>
+</div>
+</form>
+</body>
+<script src="/static/index/layui/layui.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.data.js"></script>
+<script type="text/javascript" src="/static/index/js/distpicker.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script>
+    $(function(){
+    $("#submit").on('click',function(){
+    $.ajax({
+    url:'{:url("address/update")}',
+    type:'post',
+    data:$('form').serialize(),
+    dataType:'json',
+        success:function (data) {
+            if(data.code==1)
+            {
+                layer.msg(data.msg,
+                    {
+                        icon:1,
+                        time:1000
+                    },function () {
+                        location.href=data.url;
+                    })
+            }else{
+                layer.open({
+                    icon:2,
+                    title:"错误",
+                    content:data.msg,
+                });
+            }
+        }
+    });
+    return false;
+    })
+    })
+</script>
+</html>

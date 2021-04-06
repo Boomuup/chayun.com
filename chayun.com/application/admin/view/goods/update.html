@@ -1,0 +1,203 @@
+{include file="public/header" /}
+
+<link href="/static/admin/hui/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div class="page-container">
+    <form  class="form form-horizontal" id="form-article-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">商品标题：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="{$info.goods_name}" placeholder="" id="goods_name" name="goods_name">
+
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">所属分类：</label>
+            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:50%">
+				<select name="cate_id" class="select">
+                    <option value="{$info.cate_id}">{$info.cname}</option>
+                    {volist name="cate" id="vo"}
+				    <option value="{$vo.cid}">{:str_repeat("---",$vo['level'])}{$vo.cname}</option>
+                    {/volist}
+				</select>
+				</span> </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">单位：</label>
+            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:50%">
+				<select class="select" name="unit">
+					<option value="{$info.unit}">{$info.unit}</option>
+					<option value="g">g</option>
+					<option value="kg">kg</option>
+					<option value="斤">斤</option>
+					<option value="套">套</option>
+				</select>
+				</span> </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">产品重量：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" name="weight" id="" placeholder="" value="{$info.weight}" class="input-text" style="width:50%">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">成本价格：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" name="cost" id="" placeholder="" value="{$info.cost}" class="input-text" style="width:50%">
+                元</div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">市场价格：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" name="original" id="" placeholder="" value="{$info.original}" class="input-text" style="width:50%">
+                元</div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">销售价格：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" name="price" id="" placeholder="" value="{$info.price}" class="input-text" style="width:50%">
+                元</div>
+        </div>
+        <input type="hidden" name="id"  placeholder="" value="{$info.id}" class="input-text" style="width:50%">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">库存:&nbsp&nbsp</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" name="store" id="" placeholder="" value="{$info.store}" class="input-text" style="width:50%">
+                件</div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>是否上架:&nbsp&nbsp</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                {if $info.status==1}
+                <div class="radio-box">
+                    <input name="status" type="radio" id="status-1" value="1" checked>
+                    <label for="status-1">上架</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" id="status-2" name="status" value="0">
+                    <label for="status-2">下架</label>
+                </div>
+                {else}
+                <div class="radio-box">
+                    <input name="status" type="radio" id="status-1" value="1" >
+                    <label for="status-1">上架</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" id="status-2" name="status" value="0" checked>
+                    <label for="status-2">下架</label>
+                </div>
+                {/if}
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>是否热销:&nbsp&nbsp</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                {if $info.hot==1}
+                <div class="radio-box">
+                    <input name="hot" type="radio" id="hot-1" value="1" checked>
+                    <label for="hot-1">是</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" id="hot-2" name="hot" value="0">
+                    <label for="hot-2">否</label>
+                </div>
+                {else}
+                <div class="radio-box">
+                    <input name="hot" type="radio" id="hot-1" value="1" >
+                    <label for="hot-1">是</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" id="hot-2" name="hot" value="0" checked>
+                    <label for="hot-2">否</label>
+                </div>
+                {/if}
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">产品摘要：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <textarea name="introduction" cols="" rows=""  class="textarea"  placeholder="说点什么...最少输入10个字符"
+                          datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="$.Huitextarealength(this,200)">{$info.introduction}</textarea>
+                <p class="textarea-numberbar"><em class="textarea-length">0</em>/50</p>
+            </div>
+        </div>
+        <div id = "content1"  hidden="hidden">{$info.content}</div>
+        <div id = "content2"  hidden="hidden"></div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">详细内容：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <script id="editor" type="text/plain" name="content"  style="width:100%;height:400px;">
+
+                </script></div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <button onClick="article_save_submit();" id="btn" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 提交</button>
+                <button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+            </div>
+        </div>
+    </form>
+</div>
+{include file="public/footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/static/admin/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/webuploader/0.1.5/webuploader.min.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" src="/static/admin/hui/lib/ueditor/1.4.3/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="/static/admin/hui/lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+<script src="/static/index/js/jquery-3.4.1.min.js" ></script>
+<script type="text/javascript">
+    $(function() {
+        $("#content2").html($("#content1").text());
+        $("#editor").html($("#content2").text());
+    });
+    $(function(){
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+
+    });
+    $(function(){
+        var ue = UE.getEditor('editor');
+    });
+    $(function(){
+        $("#btn").on('click',function(){
+            $.ajax({
+                url:'{:url("goods/updateGoods")}',
+                type:'post',
+                data:$('form').serialize(),
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            })
+                    }else{
+                        layer.open({
+                            icon:2,
+                            title:"错误",
+                            content:data.msg,
+                        });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</body>
+
+</html>

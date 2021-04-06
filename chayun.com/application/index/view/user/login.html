@@ -1,0 +1,183 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/login.css" />
+{include file="public/header" /}
+</div>
+<div class="layui-fluid content">
+    <div class="login">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+                <li class="layui-this" style="margin-left: 30px">密码登陆</li>
+                <li>短信登陆</li>
+            </ul>
+            <div class="layui-tab-content" >
+                <div class="layui-tab-item layui-show">
+                    <form class="login1">
+                        <div class="login-1">
+                            <div>
+                                <input type="text" name="username" placeholder="用户名">
+                            </div>
+                            <div >
+                                <input type="password" name="password" placeholder="密码">
+                            </div>
+                        </div>
+                        <div class="login-code">
+                            <div><input type="text" name="code1" placeholder="验证码" style="width: 100px">
+                                <img src="{:captcha_src()}" class="verify"
+                                     onclick="javascript:this.src='{:captcha_src()}?rand='+Math.random()"  style="width: 100px;height: 40px">
+                            </div>
+                        </div>
+                        <div class="login-btn">
+                            <button type="button" id="btn1">登&nbsp录</button>
+                        </div>
+                    </form>
+                    <span class="register-title"><a href="register.html">还没账号？前往注册</a></span>
+                </div>
+                <div class="layui-tab-item ">
+                    <form class="login2">
+                        <div class="login-1">
+                            <div>
+                                <input type="text" name="phone" placeholder="手机号">
+                            </div>
+                        </div>
+                        <div class="login-code">
+                            <div><input type="text" name="code2" placeholder="验证码" style="width: 90px">
+                                <button class="codebtn" type="button" id="codebtn" style="width: 110px;height:34px;background-color: #EFEFEF;color: black">发送验证码</button>
+                            </div>
+                        </div>
+                        <div class="login-btn">
+                            <button type="button" id="btn2">登&nbsp录</button>
+                        </div>
+                    </form>
+                    <span class="register-title"><a href="register.html">还没账号？前往注册</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script>
+    layui.use('element', function(){
+        var $ = layui.jquery
+            ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+    });
+    //60秒后才能点击
+    var wait = 60;
+    document.getElementById("codebtn").onclick = function() {
+        time(this);
+    }
+    function time(o) {
+        if (wait == 0) {
+            o.removeAttribute("disabled");
+            o.innerHTML = "获取验证码";
+            wait = 60;
+        } else {
+            o.setAttribute("disabled", true);
+            o.innerHTML = "重新发送"+"("+wait+")";
+            wait--;
+            setTimeout(function() {
+                time(o)
+            }, 1000)
+        }
+    }
+
+
+
+    $(function(){
+        $("#btn1").on('click',function(){
+            $.ajax({
+                url:'{:url("user/login")}',
+                type:'post',
+                data:$('.login1').serialize(),
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            })
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:0,
+                                time:2000
+                            });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+
+    $(function(){
+        $(".codebtn").on('click',function(){
+            var phone = $("input[name='phone']").val();
+            $.ajax({
+                url:"{:url('Aliyunsms/loginCode')}",
+                type:"post",
+                data:{"phone": phone},
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+        })
+    })
+
+    $(function(){
+        $("#btn2").on('click',function(){
+            $.ajax({
+                url:'{:url("user/smsLogin")}',
+                type:'post',
+                data:$('.login2').serialize(),
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            })
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:0,
+                                time:2000
+                            });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{include file="public/header" /}
+<style>
+    .text-c td{
+        vertical-align: middle !important;
+    }
+</style>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 轮播图管理 <span class="c-gray en">&gt;</span>
+    轮播图列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <table class="table table-border table-bordered table-bg">
+        <thead>
+        <tr>
+            <th scope="col" colspan="12">评论列表</th>
+        </tr>
+        <tr class="text-c">
+            <th width="40">ID</th>
+            <th width="50">用户名</th>
+            <th width="180">商品名称</th>
+            <th width="350">评论内容</th>
+            <th width="50">评分</th>
+            <th width="90">评论图片</th>
+            <th width="100">评论时间</th>
+            <th width="60">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="comment" id="vo"}
+        <tr class="text-c">
+            <td>{$vo.id}</td>
+            <td>{$vo.username}</td>
+            <td>{$vo.goods_name}</td>
+            <td>{$vo.desc}</td>
+            <td>{$vo.score}星</td>
+            <td><a href="http://chayun.com/static/uploads/{$vo.picture}" target="_blank" title="点击查看">
+                <img width="60" class="product-thumb" src="/static/uploads/{$vo.picture}"></a>
+            </td>
+            <td>{$vo.comment_time|date="Y-m-d H:i:s"}</td>
+            <td>
+
+                <a href="javascript:;" onclick="admin_add('评论回复','{:url('comment/reply',['id'=>$vo.id,'username'=>$vo.username])}','900','500')" >
+                <i class="Hui-iconfont">&#xe603;</i>回复</a>
+                <a href="javascript:;" onclick="admin_del('删除评论',{$vo.id},'900','500')" >
+                    <i class="Hui-iconfont">&#xe6e2;</i>删除</a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div align="center">{$comment|raw}</div>
+</div>
+<script type="text/javascript">
+    /*
+        参数解释：
+        title	标题
+        url		请求的url
+        id		需要操作的数据id
+        w		弹出层宽度（缺省调默认值）
+        h		弹出层高度（缺省调默认值）
+    */
+    /*评论回复*/
+    function admin_add(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+    /*评论-删除*/
+    function admin_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: "{:url('comment/del')}",
+                data:{
+                    id:id
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data.code == 1){
+                        layer.msg('已删除!',{icon:1,time:1000});
+                        location.reload(true);
+                    }else {
+                        layer.open({
+                            title:"错误",
+                            content:data.msg,
+                            icon:2
+                        });
+                    }
+                },
+                error:function(data) {
+                    layer.open({
+                        title:"错误",
+                        content:data.msg,
+                        icon:5,
+                        anim:6
+                    });
+                },
+            });
+        });
+    }
+
+
+</script>
+{include file="public/footer" /}
+
+</body>
+</html>

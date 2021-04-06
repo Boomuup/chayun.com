@@ -1,0 +1,9 @@
+<script src="/static/index/layui/layui.js"></script>
+<script>
+    $("#likebtn").click(function(){
+        var like = $("#like").val();
+        window.location.href='{:url("lists/likelist")}?like='+ "%"+like+"%";
+    });
+</script>
+
+

@@ -1,0 +1,371 @@
+{include file="public/header" /}
+<script src="/static/index/js/jquery-3.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="/static/index/js/echarts.min.js"></script>
+</head>
+<style>
+    .marquee{height:100px;width: 650px;
+        overflow:hidden;
+        line-height:22px;
+        border: 2px solid #EEEEEE;
+        float: left;
+        margin-right: 100px;
+    }
+    .marquee span{
+        float: right;
+        margin-right: 20px;
+    }
+    .marquee li{
+        margin-left: 20px;
+    }
+    .card {
+        width: 68%;
+        height: 110px;
+        margin-top: 20px;
+        margin-bottom: 90px;
+        margin-left: 16%;
+        border-radius: 10px;
+    }
+    .card i{
+        margin-left: 18px;
+    }
+    .font-set{
+        width: 100%;
+        text-align: center;
+        color: white;
+        font-size: 19px;
+        margin-top: 12px;
+        font-weight: lighter;
+    }
+    .data-set{
+        width: 100%;
+        text-align: center;
+        color: white;
+        font-size: 34px;
+        font-weight: bold;
+    }
+    .small-btn{
+        margin-left: 500px;
+    }
+</style>
+<body>
+<div class="row">
+    <div class="col-md-3">
+        <div class="card row" style="background-color: #3BB4F2">
+            <div class="col-md-4"><i class="Hui-iconfont" style="font-size: 69px;color: white">&#xe60d;</i></div>
+            <div class="col-md-8 ">
+                <div class="font-set">今日用户访问量</div>
+                <div class="data-set">{$todayUser}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card row" style="background-color: #009688">
+            <div class="col-md-4"><i class="Hui-iconfont" style="font-size: 70px;color: white">&#xe63a;</i></div>
+            <div class="col-md-8">
+
+                <div class="font-set">今日销售额</div>
+                <div class="data-set">{$saleTotal}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card row" style="background-color: #5FB878">
+            <div class="col-md-4"><i class="Hui-iconfont" style="font-size: 66px;color: white">&#xe61e;</i></div>
+            <div class="col-md-8">
+                <div class="font-set">今日订单量</div>
+                <div class="data-set">{$ordersum}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card row" style="background-color: #FFB800">
+            <div class="col-md-4"><i class="Hui-iconfont" style="font-size: 72px;color: white">&#xe611;</i></div>
+            <div class="col-md-8">
+                <div class="font-set">网站用户量</div>
+                <div class="data-set">{$userTotal}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12" style="margin-bottom: 60px">
+    <div class="row">
+        <div class="col-md-6">
+            <div style="margin-left: 50px">
+                <div style="margin-bottom: 3px"><span>用户发货提醒:</span>
+                        <input class="btn btn-warning-outline size-MINI radius small-btn" type="button" onclick="todo1()" value="立刻处理">
+                    </button>
+                </div>
+                <div id="marquee" class="marquee">
+                    <div id="holder">
+                        <ul>
+                            {volist name="remind" id="vo"}
+                            <li><i class="Hui-iconfont">&#xe62c;</i>用户:{$vo.username} &nbsp&nbsp订单号:{$vo.ordernumber} 提醒您尽快发货<i class="Hui-iconfont">&#xe62f;</i></li>
+                           {/volist}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div style="margin-left: 65px">
+            <div style="margin-bottom: 3px"><span>库存不足警告:</span><input class="btn btn-warning-outline size-MINI radius small-btn" type="button" onclick="todo2()" value="立刻处理"></div>
+            <div id="marquee2" class="marquee">
+                <div id="hold">
+                    <ul>
+                        {volist name="store" id="vo"}
+                        <li><i class="Hui-iconfont">&#xe6e0;</i> {$vo.goods_name} <span><i class="Hui-iconfont">&#xe6b5;</i>库存余量:{$vo.store}</span></li>
+                        {/volist}
+                    </ul>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div class="row">
+    <div class="col-md-6" >
+        <div style="margin-left: 63px">
+            <div style="margin-left: 420px">
+                 <span class="select-box" style="width:150px">
+                        <select class="select" name="cateid" id="cateid">
+                            <option value="0">各大茶品分类销量</option>
+                            {volist name="category" id="vo"}
+                            <option value="{$vo.cid}">{$vo.cname}销量</option>
+                            {/volist}
+                        </select>
+                </span>
+                <input class="btn btn-primary radius" type="button" id="btn" value="切换">
+            </div>
+                <div id="main" style="width: 700px;height:400px;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div style="margin-left: 63px;">
+            <div style="margin-left: 500px">
+                 <span class="select-box" style="width:170px">
+                        <select class="select" name="days" id="days">
+                            <option value="7">近七天商品销售额</option>
+                            <option value="15">近十五天商品销售额</option>
+                            <option value="30">近一个月商品销售额</option>
+                            <option value="92">近三个月商品销售额</option>
+                        </select>
+                </span>
+                <input class="btn btn-primary radius" type="button" id="btn2" value="切换">
+            </div>
+        <div id="main2" style="width: 800px;height:400px;"></div>
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}
+</body>
+
+<script type="text/javascript">
+    function todo1() {
+        window.location.href="{:url('orders/index',['mark'=>-1])}";
+    }
+    function todo2() {
+        window.location.href="{:url('goods/index',['mark'=>-1])}";
+    }
+    !function ($) {
+        $.Huimarquee2 = function(height,speed,delay){
+            var scrollT;
+            var pause = false;
+            var ScrollBox = document.getElementById("marquee2");
+            if(document.getElementById("hold").offsetHeight <= height) return;
+            var _tmp = ScrollBox.innerHTML.replace('hold', 'hold2');
+            ScrollBox.innerHTML += _tmp;
+            ScrollBox.onmouseover = function(){pause = true}
+            ScrollBox.onmouseout = function(){pause = false}
+            ScrollBox.scrollTop = 0;
+            var start = function(){
+                scrollT = setInterval(scrolling,speed);
+                if(!pause) ScrollBox.scrollTop += 2}
+            var scrolling = function(){
+                if(ScrollBox.scrollTop % height != 0){
+                    ScrollBox.scrollTop += 2;
+                    if(ScrollBox.scrollTop >= ScrollBox.scrollHeight/2) ScrollBox.scrollTop = 0}
+                else{
+                    clearInterval(scrollT);
+                    setTimeout(start,delay)}
+            }
+            setTimeout(start,delay)}
+    }(window.jQuery);
+    $.Huimarquee2(45,50,800);
+    $.Huimarquee(22,50,800); /*移动高度,移动速度,间隔时间*/
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var x = {$x};
+    var y = {$y};
+    //切换图表
+    $(function(){
+        $("#btn").on('click',function(){
+            var cateid = $('#cateid').val();
+            if(cateid == 0){
+                location.reload();
+            }
+            $.ajax({
+                url:'{:url("index/change")}',
+                type:'post',
+                data:{
+                    'cateid':cateid
+                },
+                dataType:'json',
+                success:function (data) {
+                    myChart = echarts.init(document.getElementById('main'));
+                    x = data.x;
+                    y = data.y;
+                    option = {
+                        title:{
+                            text: data.title
+                        },
+                        tooltip: {},
+                        legend: {
+                            data:['销量 单位:/件']
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: x
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            name: '销量 单位:/件',
+                            data: y,
+                            type: data.type,
+                            barWidth : 40,//柱图宽度
+                            itemStyle:{
+                                normal:{
+                                    label:{
+                                        show:true, //自动显示数据 ，无需鼠标滑动才显示数据
+                                    }
+                                }
+                            }
+                        }]
+                    };
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                }
+            });
+            return false;
+        })
+    });
+    // 指定图表的配置项和数据
+    option = {
+        title:{
+            text:'各大分类销量图'
+        },
+        tooltip: {},
+        legend: {
+            data:['销量 单位:/件']
+        },
+        xAxis: {
+            type: 'category',
+            data: x
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            name: '销量 单位:/件',
+            data: y,
+            type: 'bar',
+            barWidth : 40,
+            itemStyle:{
+                normal:{
+                    label:{
+                        show:true, //自动显示数据 ，无需鼠标滑动才显示数据
+                    }
+                }
+            }
+        }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<script>
+    //销售额折线图
+    var myChart = echarts.init(document.getElementById('main2'));
+    option = {
+        title:{
+            text:'近七天商品销售额'
+        },
+        tooltip: {},
+        legend: {
+            data:['销售额 单位:/元']
+        },
+        xAxis: {
+            type: 'category',
+            data: {$x1}
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            name: '销售额 单位:/元',
+            data: {$y1},
+            type: 'line',
+            barWidth : 40,
+            itemStyle:{
+                normal:{
+                    label:{
+                        show:true, //自动显示数据 ，无需鼠标滑动才显示数据
+                    }
+                }
+            }
+        }]
+    };
+    //切换图表
+    $(function(){
+        $("#btn2").on('click',function(){
+            var days = $('#days').val();
+            $.ajax({
+                url:'{:url("index/getTotal")}',
+                type:'post',
+                data:{
+                    'days':days
+                },
+                dataType:'json',
+                success:function (data) {
+                    myChart = echarts.init(document.getElementById('main2'));
+                    option = {
+                        title:{
+                            text: data.title
+                        },
+                        tooltip: {},
+                        legend: {
+                            data:['销售额 单位:/元']
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: data.x
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            name: '销售额 单位:/元',
+                            data: data.y,
+                            type: 'line',
+                            itemStyle:{
+                                normal:{
+                                    label:{
+                                        show:true, //自动显示数据 ，无需鼠标滑动才显示数据
+                                    }
+                                }
+                            }
+                        }]
+                    };
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                }
+            });
+            return false;
+        })
+    });
+    myChart.setOption(option);
+</script>
+</html>

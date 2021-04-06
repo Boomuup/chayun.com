@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>茶韵后台登录</title>
+		<style>
+			body{
+				
+			}
+			.main{
+				text-align: center;
+				border: 1px gainsboro solid;
+				background-color: snow;
+				border-radius: 8px;
+				width: 300px;
+				height: 330px;
+				top:50%;
+				left:50%;
+				position: absolute;
+				transform: translate(-50%, -50%);
+			}
+			.form-title{
+				display: block;
+				padding-top: 20px;
+				font-size: 25px;
+				padding-bottom: 10px;
+				border-bottom: 0.5px solid #CCC;
+			}
+			input{
+				width: 70%;
+				height: 35px;
+				border-radius: 4px;
+				border: 1px solid #ccc;
+			}
+			.first{
+				padding-top: 30px;
+			}
+			input[type=button] {
+			  background-color: #4CAF50;
+			  color: white;
+			  /*border: none;*/
+			  border-radius: 4px;
+			  cursor: pointer;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class='main'>
+			<span class='form-title'>茶韵后台管理系统</span>
+			<form>
+			<div class="first"><input type="text" name="name" id="name"  placeholder="username"/></div>
+			<div class='first'><input type="password" name="password" id="password" placeholder="password" /></div>
+			<!--<div class='checkcode'><input type="text" name="code" id="code" placeholder="code" />
+				<img src="{:captcha_src()}" class="verify"
+					 onclick="javascript:this.src='{:captcha_src()}?rand='+Math.random()" >
+			</div>-->
+			<div class='first'><input type="button" id="btn" value="登录"></div>
+			</form>
+		</div>
+		<script type="text/javascript" src="/static/admin/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+		<script>
+            $(function(){
+                $("#btn").on('click',function(){
+                    $.ajax({
+                        url:'{:url("login/check")}',
+                        type:'post',
+                        data:$('form').serialize(),
+                        dataType:'json',
+                        success:function (data) {
+                            if(data.code==1)
+                            {
+                                layer.msg(data.msg,
+                                    {
+                                        icon:1,
+                                        time:1000
+                                    },function () {
+                                        location.href=data.url;
+                                    })
+                            }else{
+                                layer.msg(data.msg,
+                                    {
+                                        icon:0,
+                                        time:2000
+                                    })
+                            }
+                        }
+                    });
+                    return false;
+                })
+            })
+
+		</script>
+	</body>
+</html>

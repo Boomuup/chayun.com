@@ -1,0 +1,109 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/login.css" />
+{include file="public/header" /}
+</div>
+<div class="layui-fluid content">
+    <div class="register">
+        <p>注册</p>
+        <form>
+        <input type="text" name="username"  placeholder="用户名"/>
+        <input type="email" name="email"   placeholder="email"/>
+        <input type="password" name="password"  placeholder="密码"/>
+        <input type="password" name="password_confirm"  placeholder="确认密码"/>
+        <input type="text" name="phone"  placeholder="电话号码"/>
+        <input class="code" type="text" name="code" placeholder="请输入验证码">
+        <button class="codebtn" type="button" id="codebtn">发送验证码</button>
+        <button class="regbtn" type="button">注册</button>
+        </form>
+    </div>
+</div>
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script>
+    //60秒后才能点击
+    var wait = 60;
+    document.getElementById("codebtn").onclick = function() {
+        time(this);
+    }
+    function time(o) {
+        if (wait == 0) {
+            o.removeAttribute("disabled");
+            o.innerHTML = "获取验证码";
+            wait = 60;
+        } else {
+            o.setAttribute("disabled", true);
+            o.innerHTML = "重新发送"+"("+wait+")";
+            wait--;
+            setTimeout(function() {
+                time(o)
+            }, 1000)
+        }
+    }
+    $(function(){
+        $(".codebtn").on('click',function(){
+            var phone = $("input[name='phone']").val();
+            $.ajax({
+                url:"{:url('Aliyunsms/sendcode')}",
+                type:"post",
+                data:{"phone": phone},
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+        })
+    })
+
+    $(function(){
+        $(".regbtn").on('click',function(){
+            $.ajax({
+                url:'{:url("user/register")}',
+                type:'post',
+                data:$('form').serialize(),
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            },function () {
+                                location.href=data.url;
+                            })
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:0,
+                                time:2000
+                            });
+                    }
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</body>
+</html>

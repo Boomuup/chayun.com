@@ -1,0 +1,241 @@
+{include file="public/css" /}
+<link rel="stylesheet" type="text/css" href="/static/index/css/car.css" />
+{include file="public/header" /}
+</div>
+
+<!-- ======================================作为header头部分离========================================= -->
+
+<div class="layui-container">
+    <table class="tab">
+        <tr class="car-header">
+            <td class="td_head"><input class="all_ck" type="checkbox"></td>
+            <td class="goods_head">商品</td>
+            <td class="td_head">单价</td>
+            <td class="td_head td_num">数量</td>
+            <td class="td_head">小计</td>
+            <td class="td_head">操作</td>
+        </tr>
+        {volist name="cart" id ="vo" empty="$empty"}
+        <tr class="list">
+            <td class="td_d"><input class="ck_box" type="checkbox" value="{$vo.id}"></td>
+            <td class="goods"><img src="http://chayun.com/static/uploads/{$vo.picture}" align="left" style="width: 120px"><span>{$vo.goods_name}</span></td>
+            <td class="td_d price">￥{$vo.price}</td>
+            <td class="td_d td_num"><button class="minus" onclick="sub({$vo.id})">-</button><input class="num" id="{$vo.id}" value="{$vo.num}" readonly="true" type="text"><button class="add" onclick="add({$vo.id})">+</button></td>
+            <td class="td_d smallprice">￥{$vo.price*$vo.num}</td>
+            <td class="td_d"><a href="#" class="delet" ><span onclick="del({$vo.id})">删除</span></a></td>
+        </tr>
+        {/volist}
+        <tr class="car-footer">
+            <td colspan="5">合计：<span class="allprice">￥0.00</span></td>
+            <td colspan="5"><button type="button" id="btn">去结算</button></td>
+        </tr>
+    </table>
+</div>
+
+<div style="margin-top: 500px"></div>
+
+{include file="public/footer" /}
+{include file="public/js" /}
+<script type="text/javascript" src="/static/admin/hui/lib/layer/2.4/layer.js"></script>
+<script>
+    $(function(){
+
+        //全选
+        $(".all_ck").click(function(){
+            //判断是否选中
+            if($(this).prop("checked")){ //true
+                $(".ck_box").prop({  //隐式迭代  链式操作
+                    checked:true
+                }).parents("tr").css("backgroundColor","rgba(241, 241, 241, 0.42)");
+            }else{
+                $(".ck_box").prop({  //隐式迭代  链式操作
+                    checked:false
+                }).parents("tr").css("backgroundColor","");
+            }
+            AllPrice();
+        });
+        //单选
+        $(".ck_box").each(function(){
+            $(this).click(function(){
+                if($(this).prop("checked")){
+                    $(this).parents("tr").css("backgroundColor","rgba(241, 241, 241, 0.42)")
+                }else {
+                    $(this).parents("tr").css("backgroundColor","")
+                }
+                AllPrice();
+            });
+        });
+        //数量
+        $(".minus").each(function(){
+            $(this).click(function(){
+                var number=$(this).siblings(".num").val();
+                if(number == 1){
+                    return false;
+                }
+                number--;
+                $(this).siblings(".num").val(number<1?1:number);
+                SamllPrice($(this));
+                AllPrice();
+            })
+        });
+        $(".add").each(function(){
+            $(this).click(function(){
+                var number=$(this).siblings(".num").val();
+                number++;
+                $(this).siblings(".num").val(number);
+                SamllPrice($(this));
+                AllPrice();
+            })
+        });
+        $('.num').blur(function(){
+            SamllPrice($(this));
+            AllPrice();
+        });
+        //删除事件
+        $(".delet").each(function(){
+            $(this).click(function(){
+                if($(this).parents("tr").find(".ck_box").prop("checked")){
+                    $(this).parents("tr").remove();
+                    AllPrice();
+                }
+            })
+        });
+        //封装小计函数
+        function SamllPrice(obj) {
+            var number=0;
+            if(obj.is(".num")){
+                number=obj.val();
+            }else{
+                number=obj.siblings(".num").val();
+            }
+            //获取单价
+            var len=obj.parent().prev().html().length;
+            var price=parseFloat(obj.parent().prev().html().substr(1,len-1));
+            //计算小计
+            obj.parent().next().html("￥"+(price*number).toFixed(2));
+        }
+        //封装总价
+        function AllPrice(){
+            var all_price=0;
+            $(".ck_box").each(function(){
+                if($(this).prop("checked")){
+                    var len=$(this).parents("tr").find(".smallprice").html().length;
+                    all_price+=parseFloat($(this).parents("tr").find(".smallprice").html().substr(1,len));
+                }
+            })
+            $(".allprice").html("￥"+all_price.toFixed(2));
+        }
+    })
+    //结算
+    //获取选中的id,提交到订单处理
+    $("#btn").click(function(){
+        var arr = [];
+        var uid = {$Think.session.user_info.id};
+        $(".ck_box").each(function(){
+            if($(this).prop("checked")){
+                var id=$(this).parents("tr").find(".ck_box").val();
+                arr.push(id);
+            }
+        });
+        var ids = arr.join('@');
+        if(arr.length == 0) {
+            layer.msg("您还没选择商品呢~",
+                {
+                    icon:0,
+                    time:2000
+                });
+            return false;
+        }else{
+            window.location.href='{:url("orders/index")}?uid='+ uid + '&ids='+ ids;
+        }
+
+    });
+    function sub(id) {
+        $(function(){
+            $.ajax({
+                url:"{:url('cart/subnum')}",
+                type:"post",
+                data:{"id": id},
+                dataType:"json",
+                success:function (data) {
+                    if(data.code == 0) {
+                        layer.msg(data.msg,
+                            {
+                                icon:0,
+                                time:2000
+                            })
+                    }
+                }
+            });
+        })
+    }
+    function add(id) {
+        $(function(){
+            $.ajax({
+                url:"{:url('cart/addnum')}",
+                type:"post",
+                data:{"id": id},
+                dataType:"json",
+                success:function (data) {
+
+                }
+            });
+        })
+    }
+    function del(id) {
+        $(function(){
+            $.ajax({
+                url:"{:url('cart/del')}",
+                type:"post",
+                data:{"id": id},
+                dataType:"json",
+                success:function (data) {
+
+                }
+            });
+        })
+    }
+
+    //结算
+    $(function(){
+        $("#cartbtn").on('click',function(){
+            var shopnum = $('.shopnum').val();
+
+            $.ajax({
+                url:"{:url('cart/add')}",
+                type:"post",
+                data:{"num": shopnum,
+                    "id":id,
+                    "shopid":shopid
+                },
+                dataType:"json",
+                success:function (data) {
+                    if(data.code==1)
+                    {
+                        layer.msg(data.msg,
+                            {
+                                icon:1,
+                                time:1000
+                            });
+                    }else{
+                        layer.msg(data.msg,
+                            {
+                                icon:2,
+                                time:2000
+                            });
+                    }
+                },error:function (data) {
+                    layer.open({
+                        icon:2,
+                        title:"错误",
+                        content:"系统繁忙，请稍后~~",
+                    });
+                }
+            });
+            return false;
+        })
+    })
+
+</script>
+</body>
+</html>
